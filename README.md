@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Love Protocol // Maria '26 Edition</title>
+  <title>Love Protocol // Cyberpunk Edition</title>
   <style>
     * { box-sizing: border-box; }
 
@@ -61,6 +61,7 @@
         inset 0 0 40px rgba(0, 255, 160, 0.04);
       backdrop-filter: blur(8px);
       overflow: hidden;
+      position: relative;
     }
 
     .terminal-header {
@@ -109,11 +110,14 @@
       font-size: 17px;
       line-height: 1.7;
       text-shadow: 0 0 8px rgba(0,255,160,0.22);
+      position: relative;
+      z-index: 2;
     }
 
     .line-glow { color: #00ff9f; }
     .line-accent { color: #58c7ff; }
     .line-alert { color: #ff77c8; }
+
     .line-love {
       color: #ffffff;
       text-shadow:
@@ -121,11 +125,13 @@
         0 0 14px rgba(88,199,255,0.20),
         0 0 18px rgba(0,255,159,0.20);
     }
+
     .line-secret {
       color: #ffd166;
       text-shadow:
         0 0 6px rgba(255,209,102,0.35),
-        0 0 14px rgba(255,119,200,0.20);
+        0 0 14px rgba(255,119,200,0.20),
+        0 0 22px rgba(255,209,102,0.25);
     }
 
     .footer {
@@ -173,6 +179,77 @@
       animation: glitch2 2.4s infinite linear alternate-reverse;
     }
 
+    .glitch-screen {
+      animation: screenGlitch 0.12s linear infinite;
+    }
+
+    .flash-screen {
+      animation: screenFlash 0.4s ease-out;
+    }
+
+    .access-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle, rgba(0,255,159,0.12) 0%, rgba(0,0,0,0.82) 60%, rgba(0,0,0,0.96) 100%);
+      z-index: 5;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .access-overlay.show {
+      opacity: 1;
+    }
+
+    .access-text {
+      font-size: clamp(28px, 6vw, 72px);
+      font-weight: bold;
+      color: #00ff9f;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-shadow:
+        0 0 8px rgba(0,255,159,0.7),
+        0 0 24px rgba(0,255,159,0.5),
+        0 0 40px rgba(88,199,255,0.4);
+      animation: accessPulse 0.3s infinite alternate;
+    }
+
+    /* hotspot invisível */
+    .secret-hotspot {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 90px;
+      height: 90px;
+      z-index: 20;
+      background: transparent;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    @keyframes accessPulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.03); }
+    }
+
+    @keyframes screenGlitch {
+      0%   { transform: translate(0, 0) skew(0deg); filter: hue-rotate(0deg); }
+      20%  { transform: translate(-2px, 1px) skew(0.5deg); }
+      40%  { transform: translate(2px, -1px) skew(-0.5deg); }
+      60%  { transform: translate(-1px, 2px) skew(0.2deg); filter: hue-rotate(20deg); }
+      80%  { transform: translate(1px, -2px) skew(-0.2deg); }
+      100% { transform: translate(0, 0) skew(0deg); filter: hue-rotate(0deg); }
+    }
+
+    @keyframes screenFlash {
+      0% { box-shadow: inset 0 0 0 rgba(255,255,255,0); }
+      50% { box-shadow: inset 0 0 120px rgba(0,255,159,0.22); }
+      100% { box-shadow: inset 0 0 0 rgba(255,255,255,0); }
+    }
+
     @keyframes glitch1 {
       0% { clip-path: inset(0 0 85% 0); }
       20% { clip-path: inset(30% 0 40% 0); }
@@ -200,6 +277,11 @@
       .title, .status {
         font-size: 11px;
       }
+
+      .secret-hotspot {
+        width: 80px;
+        height: 80px;
+      }
     }
   </style>
 </head>
@@ -207,8 +289,15 @@
   <canvas id="rain"></canvas>
   <div class="overlay"></div>
 
+  <!-- botão invisível -->
+  <div id="secretHotspot" class="secret-hotspot" aria-hidden="true"></div>
+
   <div class="container">
-    <div class="terminal">
+    <div class="terminal" id="terminalBox">
+      <div class="access-overlay" id="accessOverlay">
+        <div class="access-text">ACCESS GRANTED</div>
+      </div>
+
       <div class="terminal-header">
         <div class="dots">
           <span class="dot red"></span>
@@ -231,6 +320,9 @@
     const nomeBebe = nomeParam && nomeParam.trim() !== ""
       ? decodeURIComponent(nomeParam).trim()
       : "meu pequeno arco-íris";
+
+    const secretCode = "rainbow";
+    const secretTapCountRequired = 5;
 
     // ===== Chuva digital =====
     const canvas = document.getElementById("rain");
@@ -277,6 +369,9 @@
 
     // ===== Terminal =====
     const terminal = document.getElementById("terminal");
+    const terminalBox = document.getElementById("terminalBox");
+    const accessOverlay = document.getElementById("accessOverlay");
+    const secretHotspot = document.getElementById("secretHotspot");
 
     const lines = [
       { text: "[BOOT] Initializing cinematic interface...", cls: "line-accent" },
@@ -301,8 +396,10 @@
     let lineIndex = 0;
     let charIndex = 0;
     let currentLineEl = null;
-    let easterEggUnlocked = false;
     let typedBuffer = "";
+    let easterEggUnlocked = false;
+    let tapCount = 0;
+    let tapResetTimer = null;
 
     function appendLine(text, cls = "") {
       const div = document.createElement("div");
@@ -322,7 +419,7 @@
 
       const hint = document.createElement("div");
       hint.className = "hint";
-      hint.textContent = "hint: some secrets only appear in color...";
+      hint.textContent = "hint: type the hidden color code... or find the invisible mobile trigger";
       terminal.appendChild(hint);
     }
 
@@ -353,32 +450,72 @@
       }
     }
 
-    function unlockEasterEgg() {
+    function playAccessGrantedSequence() {
       if (easterEggUnlocked) return;
       easterEggUnlocked = true;
 
+      terminalBox.classList.add("glitch-screen");
+      terminalBox.classList.add("flash-screen");
+      accessOverlay.classList.add("show");
+
+      setTimeout(() => {
+        accessOverlay.classList.remove("show");
+      }, 1100);
+
+      setTimeout(() => {
+        terminalBox.classList.remove("glitch-screen");
+      }, 1200);
+
+      setTimeout(() => {
+        terminalBox.classList.remove("flash-screen");
+      }, 700);
+
       setTimeout(() => {
         appendLine("", "");
-        appendLine("[SECRET] Hidden message unlocked...", "line-secret");
+        appendLine("[SECURITY] Secret code accepted ✔", "line-secret");
+        appendLine("[VAULT] Hidden memory decrypted...", "line-secret");
+        appendLine("", "");
         appendLine("Mesmo nos dias de chuva, foste sempre o nosso arco-íris 🌈💙", "line-secret");
-        appendLine("Código afetivo validado com sucesso ✔", "line-secret");
-      }, 300);
+        appendLine("Missão secreta: amar-te para sempre ✔", "line-secret");
+      }, 1250);
     }
 
+    // desbloqueio por teclado
     document.addEventListener("keydown", (event) => {
       if (easterEggUnlocked) return;
 
       if (event.key.length === 1) {
         typedBuffer += event.key.toLowerCase();
-        if (typedBuffer.length > 20) {
-          typedBuffer = typedBuffer.slice(-20);
+
+        if (typedBuffer.length > 30) {
+          typedBuffer = typedBuffer.slice(-30);
         }
 
-        if (typedBuffer.includes("rainbow")) {
-          unlockEasterEgg();
+        if (typedBuffer.includes(secretCode)) {
+          playAccessGrantedSequence();
         }
       }
     });
+
+    // desbloqueio por toques no hotspot
+    function registerSecretTap() {
+      if (easterEggUnlocked) return;
+
+      tapCount++;
+
+      clearTimeout(tapResetTimer);
+      tapResetTimer = setTimeout(() => {
+        tapCount = 0;
+      }, 1800);
+
+      if (tapCount >= secretTapCountRequired) {
+        tapCount = 0;
+        playAccessGrantedSequence();
+      }
+    }
+
+    secretHotspot.addEventListener("click", registerSecretTap);
+    secretHotspot.addEventListener("touchstart", registerSecretTap, { passive: true });
 
     setTimeout(() => {
       terminal.innerHTML = "";
