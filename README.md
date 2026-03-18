@@ -2,80 +2,106 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Love Protocol // Maria Edition</title>
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-1: #101424;
+      --bg-2: #05070d;
+      --bg-3: #000000;
+      --neon-green: #00ff9f;
+      --neon-blue: #58c7ff;
+      --neon-pink: #ff77c8;
+      --neon-gold: #ffd166;
+      --text-soft: #8ef9d2;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      background: radial-gradient(circle at top, var(--bg-1) 0%, var(--bg-2) 45%, var(--bg-3) 100%);
+      font-family: "Courier New", monospace;
+      color: var(--neon-green);
+      overflow: hidden;
+    }
 
     body {
-      margin: 0;
-      overflow: hidden;
-      background: radial-gradient(circle at top, #101424 0%, #05070d 45%, #000000 100%);
-      font-family: "Courier New", monospace;
-      color: #00ff9f;
-      height: 100vh;
+      height: 100dvh;
+      position: relative;
     }
 
     canvas {
       position: fixed;
       inset: 0;
       z-index: 0;
+      opacity: 0.45;
     }
 
     .overlay {
       position: fixed;
       inset: 0;
+      z-index: 1;
+      pointer-events: none;
       background:
-        linear-gradient(rgba(255,255,255,0.03), rgba(255,255,255,0.01)),
+        linear-gradient(rgba(255,255,255,0.02), rgba(255,255,255,0.01)),
         repeating-linear-gradient(
           to bottom,
-          rgba(255,255,255,0.03) 0px,
-          rgba(255,255,255,0.03) 1px,
+          rgba(255,255,255,0.025) 0px,
+          rgba(255,255,255,0.025) 1px,
           transparent 2px,
           transparent 4px
         );
-      pointer-events: none;
-      z-index: 1;
       mix-blend-mode: soft-light;
     }
 
     .container {
       position: relative;
       z-index: 2;
+      height: 100dvh;
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
-      padding: 24px;
+      padding: 20px;
     }
 
     .terminal {
-      width: min(900px, 100%);
-      min-height: 520px;
-      background: rgba(5, 10, 20, 0.72);
-      border: 1px solid rgba(0, 255, 160, 0.28);
-      border-radius: 18px;
+      position: relative;
+      width: min(920px, 100%);
+      height: min(760px, calc(100dvh - 40px));
+      background: rgba(5, 10, 20, 0.80);
+      border: 1px solid rgba(0, 255, 160, 0.24);
+      border-radius: 20px;
       box-shadow:
-        0 0 20px rgba(0, 255, 160, 0.15),
-        0 0 60px rgba(0, 180, 255, 0.10),
-        inset 0 0 40px rgba(0, 255, 160, 0.04);
+        0 0 20px rgba(0, 255, 160, 0.12),
+        0 0 60px rgba(0, 180, 255, 0.08),
+        inset 0 0 40px rgba(0, 255, 160, 0.03);
       backdrop-filter: blur(8px);
       overflow: hidden;
-      position: relative;
+      display: flex;
+      flex-direction: column;
     }
 
     .terminal-header {
-      display: flex;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
       align-items: center;
-      justify-content: space-between;
+      gap: 12px;
       padding: 14px 18px;
-      border-bottom: 1px solid rgba(0, 255, 160, 0.18);
-      background: linear-gradient(to right, rgba(0,255,160,0.08), rgba(0,160,255,0.05));
+      border-bottom: 1px solid rgba(0, 255, 160, 0.16);
+      background: linear-gradient(to right, rgba(0,255,160,0.07), rgba(0,160,255,0.05));
+      min-height: 58px;
     }
 
     .dots {
       display: flex;
       gap: 8px;
+      flex-shrink: 0;
     }
 
     .dot {
@@ -90,48 +116,69 @@
     .dot.green { color: #06d6a0; background: #06d6a0; }
 
     .title {
-      color: #8ef9d2;
-      font-size: 14px;
+      min-width: 0;
+      color: var(--text-soft);
+      font-size: 13px;
       letter-spacing: 1px;
       text-transform: uppercase;
-      text-shadow: 0 0 10px rgba(0,255,160,0.35);
+      text-shadow: 0 0 10px rgba(0,255,160,0.25);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
     }
 
     .status {
-      color: #58c7ff;
-      font-size: 12px;
+      color: var(--neon-blue);
+      font-size: 11px;
       letter-spacing: 1px;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .terminal-body {
-      padding: 24px;
-      min-height: 460px;
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 26px 26px 30px;
       white-space: pre-wrap;
       font-size: 17px;
       line-height: 1.7;
-      text-shadow: 0 0 8px rgba(0,255,160,0.22);
+      text-shadow: 0 0 8px rgba(0,255,160,0.18);
       position: relative;
       z-index: 2;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0,255,159,0.35) transparent;
     }
 
-    .line-glow { color: #00ff9f; }
-    .line-accent { color: #58c7ff; }
-    .line-alert { color: #ff77c8; }
+    .terminal-body::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .terminal-body::-webkit-scrollbar-thumb {
+      background: rgba(0,255,159,0.35);
+      border-radius: 999px;
+    }
+
+    .line-glow { color: var(--neon-green); }
+    .line-accent { color: var(--neon-blue); }
+    .line-alert { color: var(--neon-pink); }
 
     .line-love {
       color: #ffffff;
       text-shadow:
-        0 0 6px rgba(255,255,255,0.25),
-        0 0 14px rgba(88,199,255,0.20),
-        0 0 18px rgba(0,255,159,0.20);
+        0 0 6px rgba(255,255,255,0.20),
+        0 0 14px rgba(88,199,255,0.16),
+        0 0 18px rgba(0,255,159,0.14);
     }
 
     .line-secret {
-      color: #ffd166;
+      color: var(--neon-gold);
       text-shadow:
-        0 0 6px rgba(255,209,102,0.35),
-        0 0 14px rgba(255,119,200,0.20),
-        0 0 22px rgba(255,209,102,0.25);
+        0 0 6px rgba(255,209,102,0.28),
+        0 0 14px rgba(255,119,200,0.18),
+        0 0 22px rgba(255,209,102,0.20);
     }
 
     .footer {
@@ -143,11 +190,12 @@
     }
 
     .hint {
-      margin-top: 18px;
+      margin-top: 16px;
       color: rgba(255,255,255,0.16);
       font-size: 11px;
       letter-spacing: 1px;
       text-transform: uppercase;
+      line-height: 1.5;
     }
 
     .glitch {
@@ -159,11 +207,9 @@
     .glitch::after {
       content: attr(data-text);
       position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
+      inset: 0;
       overflow: hidden;
-      opacity: 0.5;
+      opacity: 0.45;
       pointer-events: none;
     }
 
@@ -190,15 +236,17 @@
     .access-overlay {
       position: absolute;
       inset: 0;
+      z-index: 5;
       display: flex;
       align-items: center;
       justify-content: center;
       background:
         radial-gradient(circle, rgba(0,255,159,0.12) 0%, rgba(0,0,0,0.82) 60%, rgba(0,0,0,0.96) 100%);
-      z-index: 5;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.2s ease;
+      padding: 20px;
+      text-align: center;
     }
 
     .access-overlay.show {
@@ -206,10 +254,10 @@
     }
 
     .access-text {
-      font-size: clamp(28px, 6vw, 72px);
+      font-size: clamp(26px, 7vw, 72px);
       font-weight: bold;
-      color: #00ff9f;
-      letter-spacing: 4px;
+      color: var(--neon-green);
+      letter-spacing: 3px;
       text-transform: uppercase;
       text-shadow:
         0 0 8px rgba(0,255,159,0.7),
@@ -218,13 +266,12 @@
       animation: accessPulse 0.3s infinite alternate;
     }
 
-    /* hotspot invisível */
     .secret-hotspot {
       position: fixed;
       top: 0;
       right: 0;
-      width: 90px;
-      height: 90px;
+      width: 88px;
+      height: 88px;
       z-index: 20;
       background: transparent;
       -webkit-tap-highlight-color: transparent;
@@ -268,19 +315,102 @@
       100% { clip-path: inset(8% 0 82% 0); }
     }
 
-    @media (max-width: 600px) {
-      .terminal-body {
-        font-size: 15px;
-        padding: 18px;
+    @media (max-width: 768px) {
+      .container {
+        padding: 14px;
       }
 
-      .title, .status {
+      .terminal {
+        height: calc(100dvh - 28px);
+        border-radius: 16px;
+      }
+
+      .terminal-header {
+        grid-template-columns: auto 1fr;
+        grid-template-areas:
+          "dots status"
+          "title title";
+        gap: 8px 12px;
+        padding: 12px 14px;
+        min-height: auto;
+      }
+
+      .dots {
+        grid-area: dots;
+      }
+
+      .status {
+        grid-area: status;
+        justify-self: end;
+        font-size: 10px;
+      }
+
+      .title {
+        grid-area: title;
+        text-align: left;
+        font-size: 11px;
+        letter-spacing: 0.8px;
+      }
+
+      .terminal-body {
+        padding: 18px 16px 22px;
+        font-size: 15px;
+        line-height: 1.6;
+      }
+
+      .footer {
         font-size: 11px;
       }
 
+      .hint {
+        font-size: 10px;
+      }
+
       .secret-hotspot {
-        width: 80px;
-        height: 80px;
+        width: 76px;
+        height: 76px;
+      }
+
+      canvas {
+        opacity: 0.28;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .container {
+        padding: 10px;
+      }
+
+      .terminal {
+        height: calc(100dvh - 20px);
+        border-radius: 14px;
+      }
+
+      .terminal-header {
+        padding: 10px 12px;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+      }
+
+      .title {
+        font-size: 10px;
+      }
+
+      .status {
+        font-size: 9px;
+      }
+
+      .terminal-body {
+        padding: 16px 14px 20px;
+        font-size: 14px;
+        line-height: 1.55;
+      }
+
+      .access-text {
+        letter-spacing: 2px;
       }
     }
   </style>
@@ -289,7 +419,6 @@
   <canvas id="rain"></canvas>
   <div class="overlay"></div>
 
-  <!-- botão invisível -->
   <div id="secretHotspot" class="secret-hotspot" aria-hidden="true"></div>
 
   <div class="container">
@@ -304,9 +433,11 @@
           <span class="dot yellow"></span>
           <span class="dot green"></span>
         </div>
+
         <div class="title glitch" data-text="LOVE_PROTOCOL // SECURE TERMINAL">
           LOVE_PROTOCOL // SECURE TERMINAL
         </div>
+
         <div class="status">ENCRYPTED CHANNEL</div>
       </div>
 
@@ -319,12 +450,11 @@
     const nomeParam = params.get("nome");
     const nomeBebe = nomeParam && nomeParam.trim() !== ""
       ? decodeURIComponent(nomeParam).trim()
-      : "meu pequeno arco-íris";
+      : "Meu pequeno arco-íris";
 
     const secretCode = "rainbow";
     const secretTapCountRequired = 5;
 
-    // ===== Chuva digital =====
     const canvas = document.getElementById("rain");
     const ctx = canvas.getContext("2d");
 
@@ -336,9 +466,15 @@
     resizeCanvas();
 
     const chars = "アァカサタナハマヤャラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$#<>/=+";
-    const fontSize = 16;
+    let fontSize = window.innerWidth < 768 ? 13 : 16;
     let columns = Math.floor(window.innerWidth / fontSize);
     let drops = Array(columns).fill(1);
+
+    function rebuildRain() {
+      fontSize = window.innerWidth < 768 ? 13 : 16;
+      columns = Math.floor(window.innerWidth / fontSize);
+      drops = Array(columns).fill(1);
+    }
 
     function drawRain() {
       ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
@@ -359,15 +495,13 @@
       }
     }
 
-    setInterval(drawRain, 40);
+    setInterval(drawRain, 50);
 
     window.addEventListener("resize", () => {
       resizeCanvas();
-      columns = Math.floor(window.innerWidth / fontSize);
-      drops = Array(columns).fill(1);
+      rebuildRain();
     });
 
-    // ===== Terminal =====
     const terminal = document.getElementById("terminal");
     const terminalBox = document.getElementById("terminalBox");
     const accessOverlay = document.getElementById("accessOverlay");
@@ -383,7 +517,7 @@
       { text: "", cls: "" },
       { text: `${nomeBebe} 🌈,`, cls: "line-love" },
       { text: "és a nossa maior bênção.", cls: "line-love" },
-      { text: "Amo-te hoje e sempre 💙", cls: "line-love" },
+      { text: "Amo-te hoje e sempre 💛", cls: "line-love" },
       { text: "", cls: "" },
       { text: "[DATA] Hope restored after storm event.", cls: "line-accent" },
       { text: "[DATA] Rainbow signal detected.", cls: "line-accent" },
@@ -401,13 +535,16 @@
     let tapCount = 0;
     let tapResetTimer = null;
 
+    function scrollTerminalToBottom() {
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
     function appendLine(text, cls = "") {
       const div = document.createElement("div");
       if (cls) div.className = cls;
       div.textContent = text;
       terminal.appendChild(div);
-      terminal.scrollTop = terminal.scrollHeight;
-      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+      scrollTerminalToBottom();
     }
 
     function appendHint() {
@@ -421,6 +558,8 @@
       hint.className = "hint";
       hint.textContent = "hint: type the hidden color code... or find the invisible mobile trigger";
       terminal.appendChild(hint);
+
+      scrollTerminalToBottom();
     }
 
     function type() {
@@ -440,7 +579,7 @@
       if (charIndex < line.text.length) {
         currentLineEl.textContent += line.text.charAt(charIndex);
         charIndex++;
-        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+        scrollTerminalToBottom();
         setTimeout(type, Math.random() * 18 + 18);
       } else {
         lineIndex++;
@@ -480,7 +619,6 @@
       }, 1250);
     }
 
-    // desbloqueio por teclado
     document.addEventListener("keydown", (event) => {
       if (easterEggUnlocked) return;
 
@@ -497,7 +635,6 @@
       }
     });
 
-    // desbloqueio por toques no hotspot
     function registerSecretTap() {
       if (easterEggUnlocked) return;
 
