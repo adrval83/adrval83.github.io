@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Love Protocol // Cyberpunk Edition</title>
+  <title>Love Protocol // Maria '26 Edition</title>
   <style>
     * { box-sizing: border-box; }
 
