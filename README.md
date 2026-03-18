@@ -237,7 +237,19 @@
   </div>
 
   <script>
-    // chuva digital
+    // ==============================
+    // LER NOME DA URL
+    // Exemplo: ?nome=Matilde
+    // ==============================
+    const params = new URLSearchParams(window.location.search);
+    const nomeParam = params.get("nome");
+    const nomeBebe = nomeParam && nomeParam.trim() !== ""
+      ? decodeURIComponent(nomeParam).trim()
+      : "meu pequeno arco-íris";
+
+    // ==============================
+    // CHUVA DIGITAL
+    // ==============================
     const canvas = document.getElementById("rain");
     const ctx = canvas.getContext("2d");
 
@@ -245,6 +257,7 @@
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     }
+
     resizeCanvas();
 
     const chars = "アァカサタナハマヤャラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$#<>/=+";
@@ -266,6 +279,7 @@
         if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
           drops[i] = 0;
         }
+
         drops[i]++;
       }
     }
@@ -278,7 +292,9 @@
       drops = Array(columns).fill(1);
     });
 
-    // terminal typing
+    // ==============================
+    // TERMINAL TYPING
+    // ==============================
     const terminal = document.getElementById("terminal");
 
     const lines = [
@@ -289,7 +305,7 @@
       { text: "", cls: "" },
       { text: ">>> run blessing_protocol.exe", cls: "line-alert" },
       { text: "", cls: "" },
-      { text: "Meu pequeno arco-íris 🌈,", cls: "line-love" },
+      { text: `${nomeBebe} 🌈,`, cls: "line-love" },
       { text: "és a nossa maior bênção.", cls: "line-love" },
       { text: "Amo-te hoje e sempre 💙", cls: "line-love" },
       { text: "", cls: "" },
