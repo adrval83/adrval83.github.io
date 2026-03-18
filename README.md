@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Love Protocol // Cyberpunk Edition</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -113,18 +111,9 @@
       text-shadow: 0 0 8px rgba(0,255,160,0.22);
     }
 
-    .line-glow {
-      color: #00ff9f;
-    }
-
-    .line-accent {
-      color: #58c7ff;
-    }
-
-    .line-alert {
-      color: #ff77c8;
-    }
-
+    .line-glow { color: #00ff9f; }
+    .line-accent { color: #58c7ff; }
+    .line-alert { color: #ff77c8; }
     .line-love {
       color: #ffffff;
       text-shadow:
@@ -132,13 +121,11 @@
         0 0 14px rgba(88,199,255,0.20),
         0 0 18px rgba(0,255,159,0.20);
     }
-
-    .cursor {
-      display: inline-block;
-      width: 10px;
-      animation: blink 0.9s steps(1) infinite;
-      color: #00ff9f;
-      text-shadow: 0 0 10px #00ff9f;
+    .line-secret {
+      color: #ffd166;
+      text-shadow:
+        0 0 6px rgba(255,209,102,0.35),
+        0 0 14px rgba(255,119,200,0.20);
     }
 
     .footer {
@@ -149,10 +136,12 @@
       text-transform: uppercase;
     }
 
-    @keyframes blink {
-      50% {
-        opacity: 0;
-      }
+    .hint {
+      margin-top: 18px;
+      color: rgba(255,255,255,0.16);
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
     }
 
     .glitch {
@@ -237,19 +226,13 @@
   </div>
 
   <script>
-    // ==============================
-    // LER NOME DA URL
-    // Exemplo: ?nome=Matilde
-    // ==============================
     const params = new URLSearchParams(window.location.search);
     const nomeParam = params.get("nome");
     const nomeBebe = nomeParam && nomeParam.trim() !== ""
       ? decodeURIComponent(nomeParam).trim()
       : "meu pequeno arco-íris";
 
-    // ==============================
-    // CHUVA DIGITAL
-    // ==============================
+    // ===== Chuva digital =====
     const canvas = document.getElementById("rain");
     const ctx = canvas.getContext("2d");
 
@@ -292,9 +275,7 @@
       drops = Array(columns).fill(1);
     });
 
-    // ==============================
-    // TERMINAL TYPING
-    // ==============================
+    // ===== Terminal =====
     const terminal = document.getElementById("terminal");
 
     const lines = [
@@ -314,35 +295,40 @@
       { text: "[CORE] LOVE_LEVEL = ∞", cls: "line-glow" },
       { text: "[LINK] CONNECTION_STATUS = FOREVER", cls: "line-glow" },
       { text: "", cls: "" },
-      { text: "[END ] Transmission complete ✔", cls: "line-alert" },
-      { text: "No system error. Only love.", cls: "line-love" }
+      { text: "[END ] Transmission complete ✔", cls: "line-alert" }
     ];
 
     let lineIndex = 0;
     let charIndex = 0;
     let currentLineEl = null;
+    let easterEggUnlocked = false;
+    let typedBuffer = "";
 
-    function createCursor() {
-      const cursor = document.createElement("span");
-      cursor.className = "cursor";
-      cursor.textContent = "█";
-      return cursor;
+    function appendLine(text, cls = "") {
+      const div = document.createElement("div");
+      if (cls) div.className = cls;
+      div.textContent = text;
+      terminal.appendChild(div);
+      terminal.scrollTop = terminal.scrollHeight;
+      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
     }
 
-    function scrollToBottom() {
-      window.scrollTo({
-        top: document.body.scrollHeight,
-        behavior: "smooth"
-      });
+    function appendHint() {
+      const footer = document.createElement("div");
+      footer.className = "footer";
+      footer.textContent = "Transmission complete.";
+      terminal.appendChild(document.createTextNode("\n"));
+      terminal.appendChild(footer);
+
+      const hint = document.createElement("div");
+      hint.className = "hint";
+      hint.textContent = "hint: some secrets only appear in color...";
+      terminal.appendChild(hint);
     }
 
     function type() {
       if (lineIndex >= lines.length) {
-        const footer = document.createElement("div");
-        footer.className = "footer";
-        footer.textContent = "Press love to continue...";
-        terminal.appendChild(document.createTextNode("\n"));
-        terminal.appendChild(footer);
+        appendHint();
         return;
       }
 
@@ -357,7 +343,7 @@
       if (charIndex < line.text.length) {
         currentLineEl.textContent += line.text.charAt(charIndex);
         charIndex++;
-        scrollToBottom();
+        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
         setTimeout(type, Math.random() * 18 + 18);
       } else {
         lineIndex++;
@@ -367,7 +353,32 @@
       }
     }
 
-    terminal.appendChild(createCursor());
+    function unlockEasterEgg() {
+      if (easterEggUnlocked) return;
+      easterEggUnlocked = true;
+
+      setTimeout(() => {
+        appendLine("", "");
+        appendLine("[SECRET] Hidden message unlocked...", "line-secret");
+        appendLine("Mesmo nos dias de chuva, foste sempre o nosso arco-íris 🌈💙", "line-secret");
+        appendLine("Código afetivo validado com sucesso ✔", "line-secret");
+      }, 300);
+    }
+
+    document.addEventListener("keydown", (event) => {
+      if (easterEggUnlocked) return;
+
+      if (event.key.length === 1) {
+        typedBuffer += event.key.toLowerCase();
+        if (typedBuffer.length > 20) {
+          typedBuffer = typedBuffer.slice(-20);
+        }
+
+        if (typedBuffer.includes("rainbow")) {
+          unlockEasterEgg();
+        }
+      }
+    });
 
     setTimeout(() => {
       terminal.innerHTML = "";
