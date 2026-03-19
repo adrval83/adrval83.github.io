@@ -3,31 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Love Protocol // Cyberpunk Edition</title>
+  <title>Love Protocol // Maria Edition</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     :root {
-      --bg-1: #101424;
-      --bg-2: #05070d;
-      --bg-3: #000000;
-      --neon-green: #00ff9f;
-      --neon-blue: #58c7ff;
-      --neon-pink: #ff77c8;
-      --neon-gold: #ffd166;
-      --text-soft: #8ef9d2;
+      --bg1: #101424;
+      --bg2: #05070d;
+      --bg3: #000000;
+      --green: #00ff9f;
+      --blue: #58c7ff;
+      --pink: #ff77c8;
+      --gold: #ffd166;
+      --soft: #8ef9d2;
     }
 
     html, body {
       margin: 0;
       padding: 0;
       width: 100%;
-      min-height: 100%;
-      background: radial-gradient(circle at top, var(--bg-1) 0%, var(--bg-2) 45%, var(--bg-3) 100%);
+      height: 100%;
+      background: radial-gradient(circle at top, var(--bg1) 0%, var(--bg2) 45%, var(--bg3) 100%);
       font-family: "Courier New", monospace;
-      color: var(--neon-green);
+      color: var(--green);
       overflow: hidden;
     }
 
@@ -40,49 +38,49 @@
       position: fixed;
       inset: 0;
       z-index: 0;
-      opacity: 0.45;
+      opacity: 0.42;
     }
 
     .overlay {
       position: fixed;
       inset: 0;
-      z-index: 1;
-      pointer-events: none;
       background:
-        linear-gradient(rgba(255,255,255,0.02), rgba(255,255,255,0.01)),
+        linear-gradient(rgba(255,255,255,0.03), rgba(255,255,255,0.01)),
         repeating-linear-gradient(
           to bottom,
-          rgba(255,255,255,0.025) 0px,
-          rgba(255,255,255,0.025) 1px,
+          rgba(255,255,255,0.03) 0px,
+          rgba(255,255,255,0.03) 1px,
           transparent 2px,
           transparent 4px
         );
+      pointer-events: none;
+      z-index: 1;
       mix-blend-mode: soft-light;
     }
 
     .container {
       position: relative;
       z-index: 2;
-      height: 100dvh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      height: 100dvh;
+      padding: 18px;
     }
 
     .terminal {
-      position: relative;
-      width: min(920px, 100%);
-      height: min(760px, calc(100dvh - 40px));
-      background: rgba(5, 10, 20, 0.80);
-      border: 1px solid rgba(0, 255, 160, 0.24);
-      border-radius: 20px;
+      width: min(900px, 100%);
+      height: min(760px, calc(100dvh - 36px));
+      background: rgba(5, 10, 20, 0.78);
+      border: 1px solid rgba(0, 255, 160, 0.28);
+      border-radius: 18px;
       box-shadow:
-        0 0 20px rgba(0, 255, 160, 0.12),
-        0 0 60px rgba(0, 180, 255, 0.08),
-        inset 0 0 40px rgba(0, 255, 160, 0.03);
+        0 0 20px rgba(0, 255, 160, 0.15),
+        0 0 60px rgba(0, 180, 255, 0.10),
+        inset 0 0 40px rgba(0, 255, 160, 0.04);
       backdrop-filter: blur(8px);
       overflow: hidden;
+      position: relative;
       display: flex;
       flex-direction: column;
     }
@@ -93,15 +91,13 @@
       align-items: center;
       gap: 12px;
       padding: 14px 18px;
-      border-bottom: 1px solid rgba(0, 255, 160, 0.16);
-      background: linear-gradient(to right, rgba(0,255,160,0.07), rgba(0,160,255,0.05));
-      min-height: 58px;
+      border-bottom: 1px solid rgba(0, 255, 160, 0.18);
+      background: linear-gradient(to right, rgba(0,255,160,0.08), rgba(0,160,255,0.05));
     }
 
     .dots {
       display: flex;
       gap: 8px;
-      flex-shrink: 0;
     }
 
     .dot {
@@ -116,35 +112,34 @@
     .dot.green { color: #06d6a0; background: #06d6a0; }
 
     .title {
-      min-width: 0;
-      color: var(--text-soft);
-      font-size: 13px;
+      color: var(--soft);
+      font-size: 14px;
       letter-spacing: 1px;
       text-transform: uppercase;
-      text-shadow: 0 0 10px rgba(0,255,160,0.25);
+      text-shadow: 0 0 10px rgba(0,255,160,0.35);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       text-align: center;
+      min-width: 0;
     }
 
     .status {
-      color: var(--neon-blue);
-      font-size: 11px;
+      color: var(--blue);
+      font-size: 12px;
       letter-spacing: 1px;
       white-space: nowrap;
-      flex-shrink: 0;
     }
 
     .terminal-body {
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 26px 26px 30px;
+      padding: 24px;
       white-space: pre-wrap;
       font-size: 17px;
       line-height: 1.7;
-      text-shadow: 0 0 8px rgba(0,255,160,0.18);
+      text-shadow: 0 0 8px rgba(0,255,160,0.22);
       position: relative;
       z-index: 2;
       -webkit-overflow-scrolling: touch;
@@ -161,24 +156,24 @@
       border-radius: 999px;
     }
 
-    .line-glow { color: var(--neon-green); }
-    .line-accent { color: var(--neon-blue); }
-    .line-alert { color: var(--neon-pink); }
+    .line-glow { color: var(--green); }
+    .line-accent { color: var(--blue); }
+    .line-alert { color: var(--pink); }
 
     .line-love {
       color: #ffffff;
       text-shadow:
-        0 0 6px rgba(255,255,255,0.20),
-        0 0 14px rgba(88,199,255,0.16),
-        0 0 18px rgba(0,255,159,0.14);
+        0 0 6px rgba(255,255,255,0.25),
+        0 0 14px rgba(88,199,255,0.20),
+        0 0 18px rgba(0,255,159,0.20);
     }
 
     .line-secret {
-      color: var(--neon-gold);
+      color: var(--gold);
       text-shadow:
-        0 0 6px rgba(255,209,102,0.28),
-        0 0 14px rgba(255,119,200,0.18),
-        0 0 22px rgba(255,209,102,0.20);
+        0 0 6px rgba(255,209,102,0.35),
+        0 0 14px rgba(255,119,200,0.20),
+        0 0 22px rgba(255,209,102,0.25);
     }
 
     .footer {
@@ -190,7 +185,7 @@
     }
 
     .hint {
-      margin-top: 16px;
+      margin-top: 18px;
       color: rgba(255,255,255,0.16);
       font-size: 11px;
       letter-spacing: 1px;
@@ -207,9 +202,11 @@
     .glitch::after {
       content: attr(data-text);
       position: absolute;
-      inset: 0;
+      left: 0;
+      top: 0;
+      width: 100%;
       overflow: hidden;
-      opacity: 0.45;
+      opacity: 0.5;
       pointer-events: none;
     }
 
@@ -236,12 +233,12 @@
     .access-overlay {
       position: absolute;
       inset: 0;
-      z-index: 5;
       display: flex;
       align-items: center;
       justify-content: center;
       background:
         radial-gradient(circle, rgba(0,255,159,0.12) 0%, rgba(0,0,0,0.82) 60%, rgba(0,0,0,0.96) 100%);
+      z-index: 5;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.2s ease;
@@ -254,10 +251,10 @@
     }
 
     .access-text {
-      font-size: clamp(26px, 7vw, 72px);
+      font-size: clamp(28px, 6vw, 72px);
       font-weight: bold;
-      color: var(--neon-green);
-      letter-spacing: 3px;
+      color: var(--green);
+      letter-spacing: 4px;
       text-transform: uppercase;
       text-shadow:
         0 0 8px rgba(0,255,159,0.7),
@@ -270,8 +267,8 @@
       position: fixed;
       top: 0;
       right: 0;
-      width: 88px;
-      height: 88px;
+      width: 90px;
+      height: 90px;
       z-index: 20;
       background: transparent;
       -webkit-tap-highlight-color: transparent;
@@ -316,13 +313,18 @@
     }
 
     @media (max-width: 768px) {
+      canvas {
+        opacity: 0.28;
+      }
+
       .container {
-        padding: 14px;
+        padding: 12px;
       }
 
       .terminal {
-        height: calc(100dvh - 28px);
-        border-radius: 16px;
+        width: 100%;
+        height: calc(100dvh - 24px);
+        border-radius: 14px;
       }
 
       .terminal-header {
@@ -332,7 +334,6 @@
           "title title";
         gap: 8px 12px;
         padding: 12px 14px;
-        min-height: auto;
       }
 
       .dots {
@@ -349,7 +350,6 @@
         grid-area: title;
         text-align: left;
         font-size: 11px;
-        letter-spacing: 0.8px;
       }
 
       .terminal-body {
@@ -367,23 +367,23 @@
       }
 
       .secret-hotspot {
-        width: 76px;
-        height: 76px;
+        width: 78px;
+        height: 78px;
       }
 
-      canvas {
-        opacity: 0.28;
+      .access-text {
+        letter-spacing: 2px;
       }
     }
 
     @media (max-width: 420px) {
       .container {
-        padding: 10px;
+        padding: 8px;
       }
 
       .terminal {
-        height: calc(100dvh - 20px);
-        border-radius: 14px;
+        height: calc(100dvh - 16px);
+        border-radius: 12px;
       }
 
       .terminal-header {
@@ -408,10 +408,6 @@
         font-size: 14px;
         line-height: 1.55;
       }
-
-      .access-text {
-        letter-spacing: 2px;
-      }
     }
   </style>
 </head>
@@ -433,11 +429,9 @@
           <span class="dot yellow"></span>
           <span class="dot green"></span>
         </div>
-
         <div class="title glitch" data-text="LOVE_PROTOCOL // SECURE TERMINAL">
           LOVE_PROTOCOL // SECURE TERMINAL
         </div>
-
         <div class="status">ENCRYPTED CHANNEL</div>
       </div>
 
@@ -446,6 +440,11 @@
   </div>
 
   <script>
+    const params = new URLSearchParams(window.location.search);
+    const nomeParam = params.get("nome");
+    const nomeBebe = nomeParam && nomeParam.trim() !== ""
+      ? decodeURIComponent(nomeParam).trim()
+      : "Maria";
 
     const secretCode = "rainbow";
     const secretTapCountRequired = 5;
@@ -453,23 +452,21 @@
     const canvas = document.getElementById("rain");
     const ctx = canvas.getContext("2d");
 
+    let fontSize = window.innerWidth < 768 ? 13 : 16;
+    let columns = Math.floor(window.innerWidth / fontSize);
+    let drops = Array(columns).fill(1);
+
     function resizeCanvas() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      fontSize = window.innerWidth < 768 ? 13 : 16;
+      columns = Math.floor(window.innerWidth / fontSize);
+      drops = Array(columns).fill(1);
     }
 
     resizeCanvas();
 
     const chars = "アァカサタナハマヤャラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$#<>/=+";
-    let fontSize = window.innerWidth < 768 ? 13 : 16;
-    let columns = Math.floor(window.innerWidth / fontSize);
-    let drops = Array(columns).fill(1);
-
-    function rebuildRain() {
-      fontSize = window.innerWidth < 768 ? 13 : 16;
-      columns = Math.floor(window.innerWidth / fontSize);
-      drops = Array(columns).fill(1);
-    }
 
     function drawRain() {
       ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
@@ -491,11 +488,7 @@
     }
 
     setInterval(drawRain, 50);
-
-    window.addEventListener("resize", () => {
-      resizeCanvas();
-      rebuildRain();
-    });
+    window.addEventListener("resize", resizeCanvas);
 
     const terminal = document.getElementById("terminal");
     const terminalBox = document.getElementById("terminalBox");
@@ -510,8 +503,8 @@
       { text: "", cls: "" },
       { text: ">>> run blessing_protocol.exe", cls: "line-alert" },
       { text: "", cls: "" },
-      { text: "Maria 🌈,", cls: "line-love" },
-      { text: "és a nossa maior bênção.", cls: "line-love" },
+      { text: `${nomeBebe} 🌈,`, cls: "line-love" },
+      { text: "és a minha maior bênção.", cls: "line-love" },
       { text: "Amo-te hoje e sempre 💛", cls: "line-love" },
       { text: "", cls: "" },
       { text: "[DATA] Hope restored after storm event.", cls: "line-accent" },
