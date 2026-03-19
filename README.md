@@ -446,11 +446,6 @@
   </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const nomeParam = params.get("nome");
-    const nomeBebe = nomeParam && nomeParam.trim() !== ""
-      ? decodeURIComponent(nomeParam).trim()
-      : "meu pequeno arco-íris";
 
     const secretCode = "rainbow";
     const secretTapCountRequired = 5;
@@ -515,9 +510,9 @@
       { text: "", cls: "" },
       { text: ">>> run blessing_protocol.exe", cls: "line-alert" },
       { text: "", cls: "" },
-      { text: `${nomeBebe} 🌈,`, cls: "line-love" },
+      { text: "Maria 🌈,", cls: "line-love" },
       { text: "és a nossa maior bênção.", cls: "line-love" },
-      { text: "Amo-te hoje e sempre 💙", cls: "line-love" },
+      { text: "Amo-te hoje e sempre 💛", cls: "line-love" },
       { text: "", cls: "" },
       { text: "[DATA] Hope restored after storm event.", cls: "line-accent" },
       { text: "[DATA] Rainbow signal detected.", cls: "line-accent" },
@@ -614,7 +609,7 @@
         appendLine("[SECURITY] Secret code accepted ✔", "line-secret");
         appendLine("[VAULT] Hidden memory decrypted...", "line-secret");
         appendLine("", "");
-        appendLine("Mesmo nos dias de chuva, foste sempre o nosso arco-íris 🌈💙", "line-secret");
+        appendLine("Tu és a nossa luz depois da tempestade 🌈💛", "line-secret");
         appendLine("Missão secreta: amar-te para sempre ✔", "line-secret");
       }, 1250);
     }
