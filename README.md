@@ -2,43 +2,24 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Love Protocol // Maria Edition</title>
   <style>
     * { box-sizing: border-box; }
 
-    :root {
-      --bg1: #101424;
-      --bg2: #05070d;
-      --bg3: #000000;
-      --green: #00ff9f;
-      --blue: #58c7ff;
-      --pink: #ff77c8;
-      --gold: #ffd166;
-      --soft: #8ef9d2;
-    }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at top, var(--bg1) 0%, var(--bg2) 45%, var(--bg3) 100%);
-      font-family: "Courier New", monospace;
-      color: var(--green);
-      overflow: hidden;
-    }
-
     body {
-      height: 100dvh;
-      position: relative;
+      margin: 0;
+      overflow: hidden;
+      background: radial-gradient(circle at top, #101424 0%, #05070d 45%, #000000 100%);
+      font-family: "Courier New", monospace;
+      color: #00ff9f;
+      height: 100vh;
     }
 
     canvas {
       position: fixed;
       inset: 0;
       z-index: 0;
-      opacity: 0.42;
     }
 
     .overlay {
@@ -64,14 +45,14 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100dvh;
-      padding: 18px;
+      min-height: 100vh;
+      padding: 24px;
     }
 
     .terminal {
       width: min(900px, 100%);
-      height: min(760px, calc(100dvh - 36px));
-      background: rgba(5, 10, 20, 0.78);
+      min-height: 520px;
+      background: rgba(5, 10, 20, 0.72);
       border: 1px solid rgba(0, 255, 160, 0.28);
       border-radius: 18px;
       box-shadow:
@@ -81,15 +62,12 @@
       backdrop-filter: blur(8px);
       overflow: hidden;
       position: relative;
-      display: flex;
-      flex-direction: column;
     }
 
     .terminal-header {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
+      display: flex;
       align-items: center;
-      gap: 12px;
+      justify-content: space-between;
       padding: 14px 18px;
       border-bottom: 1px solid rgba(0, 255, 160, 0.18);
       background: linear-gradient(to right, rgba(0,255,160,0.08), rgba(0,160,255,0.05));
@@ -112,53 +90,33 @@
     .dot.green { color: #06d6a0; background: #06d6a0; }
 
     .title {
-      color: var(--soft);
+      color: #8ef9d2;
       font-size: 14px;
       letter-spacing: 1px;
       text-transform: uppercase;
       text-shadow: 0 0 10px rgba(0,255,160,0.35);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      text-align: center;
-      min-width: 0;
     }
 
     .status {
-      color: var(--blue);
+      color: #58c7ff;
       font-size: 12px;
       letter-spacing: 1px;
-      white-space: nowrap;
     }
 
     .terminal-body {
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
       padding: 24px;
+      min-height: 460px;
       white-space: pre-wrap;
       font-size: 17px;
       line-height: 1.7;
       text-shadow: 0 0 8px rgba(0,255,160,0.22);
       position: relative;
       z-index: 2;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(0,255,159,0.35) transparent;
     }
 
-    .terminal-body::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .terminal-body::-webkit-scrollbar-thumb {
-      background: rgba(0,255,159,0.35);
-      border-radius: 999px;
-    }
-
-    .line-glow { color: var(--green); }
-    .line-accent { color: var(--blue); }
-    .line-alert { color: var(--pink); }
+    .line-glow { color: #00ff9f; }
+    .line-accent { color: #58c7ff; }
+    .line-alert { color: #ff77c8; }
 
     .line-love {
       color: #ffffff;
@@ -169,7 +127,7 @@
     }
 
     .line-secret {
-      color: var(--gold);
+      color: #ffd166;
       text-shadow:
         0 0 6px rgba(255,209,102,0.35),
         0 0 14px rgba(255,119,200,0.20),
@@ -190,7 +148,6 @@
       font-size: 11px;
       letter-spacing: 1px;
       text-transform: uppercase;
-      line-height: 1.5;
     }
 
     .glitch {
@@ -242,8 +199,6 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.2s ease;
-      padding: 20px;
-      text-align: center;
     }
 
     .access-overlay.show {
@@ -253,7 +208,7 @@
     .access-text {
       font-size: clamp(28px, 6vw, 72px);
       font-weight: bold;
-      color: var(--green);
+      color: #00ff9f;
       letter-spacing: 4px;
       text-transform: uppercase;
       text-shadow:
@@ -263,6 +218,7 @@
       animation: accessPulse 0.3s infinite alternate;
     }
 
+    /* hotspot invisível */
     .secret-hotspot {
       position: fixed;
       top: 0;
@@ -312,101 +268,19 @@
       100% { clip-path: inset(8% 0 82% 0); }
     }
 
-    @media (max-width: 768px) {
-      canvas {
-        opacity: 0.28;
-      }
-
-      .container {
-        padding: 12px;
-      }
-
-      .terminal {
-        width: 100%;
-        height: calc(100dvh - 24px);
-        border-radius: 14px;
-      }
-
-      .terminal-header {
-        grid-template-columns: auto 1fr;
-        grid-template-areas:
-          "dots status"
-          "title title";
-        gap: 8px 12px;
-        padding: 12px 14px;
-      }
-
-      .dots {
-        grid-area: dots;
-      }
-
-      .status {
-        grid-area: status;
-        justify-self: end;
-        font-size: 10px;
-      }
-
-      .title {
-        grid-area: title;
-        text-align: left;
-        font-size: 11px;
-      }
-
+    @media (max-width: 600px) {
       .terminal-body {
-        padding: 18px 16px 22px;
         font-size: 15px;
-        line-height: 1.6;
+        padding: 18px;
       }
 
-      .footer {
+      .title, .status {
         font-size: 11px;
-      }
-
-      .hint {
-        font-size: 10px;
       }
 
       .secret-hotspot {
-        width: 78px;
-        height: 78px;
-      }
-
-      .access-text {
-        letter-spacing: 2px;
-      }
-    }
-
-    @media (max-width: 420px) {
-      .container {
-        padding: 8px;
-      }
-
-      .terminal {
-        height: calc(100dvh - 16px);
-        border-radius: 12px;
-      }
-
-      .terminal-header {
-        padding: 10px 12px;
-      }
-
-      .dot {
-        width: 10px;
-        height: 10px;
-      }
-
-      .title {
-        font-size: 10px;
-      }
-
-      .status {
-        font-size: 9px;
-      }
-
-      .terminal-body {
-        padding: 16px 14px 20px;
-        font-size: 14px;
-        line-height: 1.55;
+        width: 80px;
+        height: 80px;
       }
     }
   </style>
@@ -415,6 +289,7 @@
   <canvas id="rain"></canvas>
   <div class="overlay"></div>
 
+  <!-- botão invisível -->
   <div id="secretHotspot" class="secret-hotspot" aria-hidden="true"></div>
 
   <div class="container">
@@ -449,24 +324,21 @@
     const secretCode = "rainbow";
     const secretTapCountRequired = 5;
 
+    // ===== Chuva digital =====
     const canvas = document.getElementById("rain");
     const ctx = canvas.getContext("2d");
-
-    let fontSize = window.innerWidth < 768 ? 13 : 16;
-    let columns = Math.floor(window.innerWidth / fontSize);
-    let drops = Array(columns).fill(1);
 
     function resizeCanvas() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      fontSize = window.innerWidth < 768 ? 13 : 16;
-      columns = Math.floor(window.innerWidth / fontSize);
-      drops = Array(columns).fill(1);
     }
 
     resizeCanvas();
 
     const chars = "アァカサタナハマヤャラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$#<>/=+";
+    const fontSize = 16;
+    let columns = Math.floor(window.innerWidth / fontSize);
+    let drops = Array(columns).fill(1);
 
     function drawRain() {
       ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
@@ -487,9 +359,15 @@
       }
     }
 
-    setInterval(drawRain, 50);
-    window.addEventListener("resize", resizeCanvas);
+    setInterval(drawRain, 40);
 
+    window.addEventListener("resize", () => {
+      resizeCanvas();
+      columns = Math.floor(window.innerWidth / fontSize);
+      drops = Array(columns).fill(1);
+    });
+
+    // ===== Terminal =====
     const terminal = document.getElementById("terminal");
     const terminalBox = document.getElementById("terminalBox");
     const accessOverlay = document.getElementById("accessOverlay");
@@ -523,16 +401,13 @@
     let tapCount = 0;
     let tapResetTimer = null;
 
-    function scrollTerminalToBottom() {
-      terminal.scrollTop = terminal.scrollHeight;
-    }
-
     function appendLine(text, cls = "") {
       const div = document.createElement("div");
       if (cls) div.className = cls;
       div.textContent = text;
       terminal.appendChild(div);
-      scrollTerminalToBottom();
+      terminal.scrollTop = terminal.scrollHeight;
+      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
     }
 
     function appendHint() {
@@ -546,8 +421,6 @@
       hint.className = "hint";
       hint.textContent = "hint: type the hidden color code... or find the invisible mobile trigger";
       terminal.appendChild(hint);
-
-      scrollTerminalToBottom();
     }
 
     function type() {
@@ -567,7 +440,7 @@
       if (charIndex < line.text.length) {
         currentLineEl.textContent += line.text.charAt(charIndex);
         charIndex++;
-        scrollTerminalToBottom();
+        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
         setTimeout(type, Math.random() * 18 + 18);
       } else {
         lineIndex++;
@@ -607,6 +480,7 @@
       }, 1250);
     }
 
+    // desbloqueio por teclado
     document.addEventListener("keydown", (event) => {
       if (easterEggUnlocked) return;
 
@@ -623,6 +497,7 @@
       }
     });
 
+    // desbloqueio por toques no hotspot
     function registerSecretTap() {
       if (easterEggUnlocked) return;
 
